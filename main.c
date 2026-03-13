@@ -72,11 +72,11 @@ int main() {
 //------------------------------------------------file
     pf = fopen("mappa.txt", "wb");
     if (pf == NULL) {
-        perror("Errore apertura file");
+        perror("errore apertura file");
         return 1;
     }
 
-    printf("Mappa generata:\n");
+    printf("mappa generata:\n");
     for (int i = 0; i < MAXWIDTH; i++) {
         for (int j = 0; j < MAXLENGTH; j++) {
             printf("%d ", MATRIX[i][j]);
@@ -86,7 +86,7 @@ int main() {
     }
 
     fclose(pf);
-    printf("File salvato con successo.\n");
+    printf("file salvato con successo\n");
     return 0;
 }
 
