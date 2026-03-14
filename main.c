@@ -89,8 +89,7 @@ int main() {
         int y_min = (player_y - VIEW_DISTANCE < 0) ? 0 : player_y - VIEW_DISTANCE;
         int y_max = (player_y + VIEW_DISTANCE >= MAXLENGTH) ? MAXLENGTH : player_y + VIEW_DISTANCE;
 
-        if (loaded_x_min == -1 || x_min < loaded_x_min || x_max > loaded_x_max || 
-            y_min < loaded_y_min || y_max > loaded_y_max) {
+        if (loaded_x_min == -1 || x_min < loaded_x_min || x_max > loaded_x_max || y_min < loaded_y_min || y_max > loaded_y_max) {
             
             int total_width = x_max - x_min;
             int chunk_size = total_width / MAXTHREADS;
@@ -100,7 +99,6 @@ int main() {
                 t_args[i].end_x = (i == MAXTHREADS - 1) ? x_max : t_args[i].start_x + chunk_size;
                 t_args[i].start_y = y_min;
                 t_args[i].end_y = y_max;
-
                 pthread_create(&threads[i], NULL, terrainGeneration, &t_args[i]);
             }
 
@@ -114,14 +112,20 @@ int main() {
             loaded_y_max = y_max;
 
             printf("\nmappa attorno al giocatore (%d - %d):\n", player_x, player_y);
+
+
             for (int i = x_min; i < x_max; i++) {
                 for (int j = y_min; j < y_max; j++) {
-                    if (i == player_x && j == player_y) printf("PLAYER");
+                    if (i == player_x && j == player_y) printf("P ");
                     else printf("%d ", MATRIX[i][j]);
                 }
                 printf("\n");
             }
+
+
         }
+
+
     }
 
     return 0;
@@ -132,13 +136,18 @@ int main() {
 //--------------------------------------------------noise generator
 float noiseGenerator(float x, float y) {
     int X = (int)floor(x) & 255;
+
     int Y = (int)floor(y) & 255;
+
     x -= floor(x); y -= floor(y);
+
     float u = fade(x), v = fade(y);
+
     int A = (p[X] + Y) & 511;
+
     int B = (p[X + 1] + Y) & 511;
-    return lerp(v, lerp(u, grad(p[A], x, y), grad(p[B], x-1, y)),
-                   lerp(u, grad(p[A+1], x, y-1), grad(p[B+1], x-1, y-1)));
+
+    return lerp(v, lerp(u, grad(p[A], x, y), grad(p[B], x-1, y)),lerp(u, grad(p[A+1], x, y-1), grad(p[B+1], x-1, y-1)));
 }
 //-------------------------------------------------------------
 
@@ -149,19 +158,21 @@ void *terrainGeneration(void *arg) {
     float scala = 0.1f;
 
     for (int i = range->start_x; i < range->end_x; i++) {
+
         for (int j = range->start_y; j < range->end_y; j++) {
+            
             float noise = noiseGenerator(i * scala, j * scala);
             float val = (noise + 1.0f) / 2.0f;
 
-            if (val < 0.10f)      MATRIX[i][j] = 0;
-            else if (val < 0.20f) MATRIX[i][j] = 1;
-            else if (val < 0.30f) MATRIX[i][j] = 2;
-            else if (val < 0.40f) MATRIX[i][j] = 3;
-            else if (val < 0.50f) MATRIX[i][j] = 4;
-            else if (val < 0.60f) MATRIX[i][j] = 5;
-            else if (val < 0.70f) MATRIX[i][j] = 6;
-            else if (val < 0.80f) MATRIX[i][j] = 7;
-            else if (val < 0.90f) MATRIX[i][j] = 8;
+            if (val < 0.25f)      MATRIX[i][j] = 0;
+            else if (val < 0.3f) MATRIX[i][j] = 1;
+            else if (val < 0.4f) MATRIX[i][j] = 2;
+            else if (val < 0.5f) MATRIX[i][j] = 3;
+            else if (val < 0.6f) MATRIX[i][j] = 4;
+            else if (val < 0.7f) MATRIX[i][j] = 5;
+            else if (val < 0.8f) MATRIX[i][j] = 6;
+            else if (val < 0.9f) MATRIX[i][j] = 7;
+            else if (val < 0.95f) MATRIX[i][j] = 8;
             else                  MATRIX[i][j] = 9;
         }
     }
